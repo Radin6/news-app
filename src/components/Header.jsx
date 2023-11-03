@@ -2,7 +2,12 @@ import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../context/SearchContext";
 
 export default function Header() {
+  //Make them configurable
   const country = "us";
+  const query = "Apple";
+  const date = "2023-11-03";
+  const sortBy = "popularity";
+
   const API_KEY = "8811c0d61a9942f4bbfa4487b40b9be1";
   const { searching, setSearching } = useContext(SearchContext);
   const { fetchUrl, setFetchUrl } = useContext(SearchContext);
@@ -16,10 +21,17 @@ export default function Header() {
   };
 
   const onChangeValue = (e) => {
+    console.log(e.target.value);
     const searchType = e.target.value;
-    setFetchUrl(
-      `https://newsapi.org/v2/${searchType}?country=${country}&apiKey=${API_KEY}`
-    );
+    if (searchType === "everything") {
+      setFetchUrl(
+        `https://newsapi.org/v2/${searchType}?q=${query}&from=${date}&sortBy=${sortBy}&apiKey=${API_KEY}`
+      );
+    } else {
+      setFetchUrl(
+        `https://newsapi.org/v2/${searchType}?country=${country}&apiKey=${API_KEY}`
+      );
+    }
   };
 
   return (
@@ -32,12 +44,12 @@ export default function Header() {
         <input
           type="radio"
           name="type-of-news"
-          value="everything"
+          value="top-headlines"
           defaultChecked
         />
-        See Random News
-        <input type="radio" name="type-of-news" value="top-headlines" />
         Top headlines
+        <input type="radio" name="type-of-news" value="everything" />
+        Everything
       </form>
 
       <h2>

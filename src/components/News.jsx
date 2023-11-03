@@ -1,13 +1,10 @@
-import exampleNews from "../mocks/example-news.json";
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { SearchContext } from "../context/SearchContext";
 
 import "./News.css";
 
-export default function News() {
+export default function News({ newsToFilter }) {
   const { searching, setSearching } = useContext(SearchContext);
-  const { fetchUrl, setFetchUrl } = useContext(SearchContext);
-  const [stateNews, setStateNews] = useState(exampleNews.articles);
 
   const filterNews = (news) => {
     return news.filter((oneNews) => {
@@ -19,24 +16,19 @@ export default function News() {
     });
   };
 
-  useEffect(() => {
-    async function getMovies() {
-      const output = await fetch(fetchUrl).then((res) => res.json());
-
-      return setStateNews(output.articles);
-    }
-    getMovies();
-  }, []);
-
   return (
     <div className="news">
-      {filterNews(stateNews).map((arti) => (
-        <li className="one-news" key={arti.url}>
-          <h3>{arti.title}</h3>
-          <img src={arti.urlToImage} alt={arti.title} />
-          <p>{arti.description}</p>
-        </li>
-      ))}
+      {!newsToFilter ? (
+        <h2>Loading...</h2>
+      ) : (
+        filterNews(newsToFilter).map((arti) => (
+          <li className="one-news" key={arti.url}>
+            <h3>{arti.title}</h3>
+            <img src={arti.urlToImage} alt={arti.title} />
+            <p>{arti.description}</p>
+          </li>
+        ))
+      )}
     </div>
   );
 }
