@@ -19,15 +19,14 @@ export default function News() {
     });
   };
 
-  /*{useEffect(() => {
-    const getMovies = () => {};
-    fetch(fetchUrl)
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json.articles);
-        //setStateNews(json.articles);
-      });
-  }, []);}*/
+  useEffect(() => {
+    async function getMovies() {
+      const output = await fetch(fetchUrl).then((res) => res.json());
+
+      return setStateNews(output.articles);
+    }
+    getMovies();
+  }, []);
 
   return (
     <div className="news">
