@@ -1,12 +1,13 @@
 import exampleNews from "../mocks/example-news.json";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../context/SearchContext";
 
 import "./News.css";
 
 export default function News() {
   const { searching, setSearching } = useContext(SearchContext);
-  const initialNews = exampleNews.articles;
+  const { fetchUrl, setFetchUrl } = useContext(SearchContext);
+  const [stateNews, setStateNews] = useState(exampleNews.articles);
 
   const filterNews = (news) => {
     return news.filter((oneNews) => {
@@ -18,9 +19,19 @@ export default function News() {
     });
   };
 
+  /*{useEffect(() => {
+    const getMovies = () => {};
+    fetch(fetchUrl)
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json.articles);
+        //setStateNews(json.articles);
+      });
+  }, []);}*/
+
   return (
     <div className="news">
-      {filterNews(initialNews).map((arti) => (
+      {filterNews(stateNews).map((arti) => (
         <li className="one-news" key={arti.url}>
           <h3>{arti.title}</h3>
           <img src={arti.urlToImage} alt={arti.title} />
