@@ -24,7 +24,11 @@ export default function News({ newsToFilter }) {
         filterNews(newsToFilter).map((arti) => (
           <li className="one-news" key={arti.url}>
             <h3>{arti.title}</h3>
-            <img src={arti.urlToImage} alt={arti.title} />
+            {arti.urlToImage ? (
+              <img src={arti.urlToImage} alt={arti.title} />
+            ) : (
+              <img src="/breaking-news-generic.jpg" alt={arti.title} />
+            )}
             <p>{arti.description}</p>
           </li>
         ))

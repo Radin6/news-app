@@ -1,5 +1,12 @@
 import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../context/SearchContext";
+import {
+  COUNTRIES,
+  CATEGORIES,
+  LANGUAGES,
+  SORT_BY,
+  API_KEY,
+} from "../utils/constants.js";
 
 export default function Header() {
   //Make them configurable
@@ -8,7 +15,6 @@ export default function Header() {
   const date = "2023-11-03";
   const sortBy = "popularity";
 
-  const API_KEY = "8811c0d61a9942f4bbfa4487b40b9be1";
   const { searching, setSearching } = useContext(SearchContext);
   const { fetchUrl, setFetchUrl } = useContext(SearchContext);
 
@@ -20,18 +26,71 @@ export default function Header() {
     }
   };
 
-  const onChangeValue = (e) => {
-    console.log(e.target.value);
-    const searchType = e.target.value;
+  const onChangeType = (t) => {
+    const searchType = t.target.value;
     if (searchType === "everything") {
       setFetchUrl(
         `https://newsapi.org/v2/${searchType}?q=${query}&from=${date}&sortBy=${sortBy}&apiKey=${API_KEY}`
       );
     } else {
       setFetchUrl(
-        `https://newsapi.org/v2/${searchType}?country=${country}&apiKey=${API_KEY}`
+        `https://newsapi.org/v2/${searchType}?q=${query}?country=${country}&apiKey=${API_KEY}`
       );
     }
+  };
+
+  const onChangeFilter = (f) => {
+    const searchFilter = f.target.value;
+  };
+
+  const TopHeadline = () => {
+    return (
+      <fieldset onChange={onChangeFilter}>
+        <legend>Top Headlines Filters</legend>
+
+        <label htmlFor="country">Country</label>
+        <select name="country" id="country">
+          {COUNTRIES.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+
+        <label htmlFor="categ">Category</label>
+        <select name="categ" id="categ">
+          {CATEGORIES.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </fieldset>
+    );
+  };
+
+  const Everything = () => {
+    return (
+      <fieldset onChange={onChangeFilter}>
+        <legend>All News</legend>
+        <label htmlFor="lang">Language</label>
+        <select name="lang" id="lang">
+          {LANGUAGES.map((lang) => (
+            <option key={lang} value={lang}>
+              {lang}
+            </option>
+          ))}
+        </select>
+        <label htmlFor="sort">Sort By</label>
+        <select name="sort" id="sort">
+          {SORT_BY.map((sort) => (
+            <option key={sort} value={sort}>
+              {sort}
+            </option>
+          ))}
+        </select>
+      </fieldset>
+    );
   };
 
   return (
@@ -40,7 +99,8 @@ export default function Header() {
         <input onChange={handleWritting} id="search-bar" />
         <button>Search</button>
       </form>
-      <form onChange={onChangeValue}>
+
+      <form onChange={onChangeType}>
         <input
           type="radio"
           name="type-of-news"
@@ -51,7 +111,7 @@ export default function Header() {
         <input type="radio" name="type-of-news" value="everything" />
         Everything
       </form>
-
+      {fetchUrl.includes("top-headlines") ? <TopHeadline /> : <Everything />}
       <h2>
         {searching
           ? "The results are ..."
