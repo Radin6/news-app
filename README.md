@@ -12,3 +12,16 @@ Currently, two official plugins are available:
 TODO
 -Change local search to API base search
 -Finish filter menu
+-When nothing is written fetchURL is default [country: us / language: en] and ask to writte something
+
+top-headlines = [q, country, category, apikey]
+
+everything = [q, from, language , sortBy ,apikey]
+
+Example
+-from: 2023-11-06
+
+Everithing:
+https://newsapi.org/v2/${searchType}?q=${query}&from=${date}&sortBy=${sortBy}&apiKey=${API_KEY}
+Top:
+https://newsapi.org/v2/${searchType}?q=${query}?country=${country}&apiKey=${API_KEY}

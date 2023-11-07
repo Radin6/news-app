@@ -1,20 +1,13 @@
 import { useContext, useState, useEffect } from "react";
 import { SearchContext } from "../context/SearchContext";
 import {
-  COUNTRIES,
+  CODES_COUNTRIES,
   CATEGORIES,
-  LANGUAGES,
+  CODES_LANGUAGES,
   SORT_BY,
-  API_KEY,
 } from "../utils/constants.js";
 
 export default function Header() {
-  //Make them configurable
-  const country = "us";
-  const query = "Apple";
-  const date = "2023-11-03";
-  const sortBy = "popularity";
-
   const { searching, setSearching } = useContext(SearchContext);
   const { fetchUrl, setFetchUrl } = useContext(SearchContext);
 
@@ -28,19 +21,39 @@ export default function Header() {
 
   const onChangeType = (t) => {
     const searchType = t.target.value;
+
     if (searchType === "everything") {
-      setFetchUrl(
-        `https://newsapi.org/v2/${searchType}?q=${query}&from=${date}&sortBy=${sortBy}&apiKey=${API_KEY}`
-      );
+      // Everything search: language, date, sortBy
+      {
+        searching
+          ? setFetchUrl(`${searchType}?q=${searching}`)
+          : setFetchUrl(`${searchType}?q=a`);
+      }
     } else {
-      setFetchUrl(
-        `https://newsapi.org/v2/${searchType}?q=${query}?country=${country}&apiKey=${API_KEY}`
-      );
+      // Top headlines search: country, category
+      {
+        searching
+          ? setFetchUrl(`${searchType}?q=${searching}`)
+          : setFetchUrl(`${searchType}?country=us`);
+      }
     }
   };
 
   const onChangeFilter = (f) => {
-    const searchFilter = f.target.value;
+    const filterValue = f.target.value;
+    const filterId = f.target.id;
+    const prevFetchUrl = fetchUrl;
+
+    {
+      ["country", "category", "language", "sortBy"].includes(filterId)
+        ? setFetchUrl(
+            prevFetchUrl.replace(
+              `${filterId}=/[a-z]+/`,
+              `${filterId}=${filterValue}`
+            )
+          )
+        : setFetchUrl(`${prevFetchUrl}&${filterId}=${filterValue}`);
+    }
   };
 
   const TopHeadline = () => {
@@ -50,9 +63,9 @@ export default function Header() {
 
         <label htmlFor="country">Country</label>
         <select name="country" id="country">
-          {COUNTRIES.map((country) => (
-            <option key={country} value={country}>
-              {country}
+          {CODES_COUNTRIES.map((country) => (
+            <option key={country.code} value={country.code}>
+              {country.name}
             </option>
           ))}
         </select>
@@ -75,9 +88,9 @@ export default function Header() {
         <legend>All News</legend>
         <label htmlFor="lang">Language</label>
         <select name="lang" id="lang">
-          {LANGUAGES.map((lang) => (
-            <option key={lang} value={lang}>
-              {lang}
+          {CODES_LANGUAGES.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.lang}
             </option>
           ))}
         </select>
@@ -101,17 +114,18 @@ export default function Header() {
       </form>
 
       <form onChange={onChangeType}>
-        <input
-          type="radio"
-          name="type-of-news"
-          value="top-headlines"
-          defaultChecked
-        />
+        <input type="radio" name="type-of-news" value="top-headlines" />
         Top headlines
         <input type="radio" name="type-of-news" value="everything" />
         Everything
       </form>
-      {fetchUrl.includes("top-headlines") ? <TopHeadline /> : <Everything />}
+      {fetchUrl.includes("top-headlines") ? (
+        searching ? (
+          <TopHeadline />
+        ) : null
+      ) : searching ? (
+        <Everything />
+      ) : null}
       <h2>
         {searching
           ? "The results are ..."
