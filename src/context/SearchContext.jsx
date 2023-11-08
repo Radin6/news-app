@@ -5,7 +5,14 @@ export const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
   const [fetchUrl, setFetchUrl] = useState("top-headlines?country=us");
-  const [searching, setSearching] = useState(false);
+  const [searching, setSearching] = useState({
+    type: "top-headlines",
+    q: "",
+    country: "",
+    category: "",
+    language: "",
+    sort: "",
+  });
 
   return (
     <SearchContext.Provider

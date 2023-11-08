@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { SearchContext } from "../context/SearchContext";
+
 import {
   CODES_COUNTRIES,
   CATEGORIES,
@@ -9,56 +10,47 @@ import {
 
 export default function Header() {
   const { searching, setSearching } = useContext(SearchContext);
-  const { fetchUrl, setFetchUrl } = useContext(SearchContext);
+  const { setFetchUrl } = useContext(SearchContext);
 
-  const handleWritting = (event) => {
-    if (event.target.value === "") {
-      setSearching(false);
-    } else {
-      setSearching(event.target.value);
+  const updateFetchUrl = (newSearching) => {
+    console.log(newSearching);
+    if (newSearching.type === "top-headlines") {
+      return setFetchUrl(
+        `${newSearching.type}?q=${newSearching.q}&country=${
+          newSearching.country ? newSearching.country : ""
+        }&category=${newSearching.category ? newSearching.category : ""}`,
+      );
+    } else if (newSearching.type === "everything") {
+      return setFetchUrl(
+        `${newSearching.type}?q=${newSearching.q}&laguage=${newSearching.language}&sort=${newSearching.sort}`,
+      );
     }
   };
 
-  const onChangeType = (t) => {
-    const searchType = t.target.value;
-
-    if (searchType === "everything") {
-      // Everything search: language, date, sortBy
-      {
-        searching
-          ? setFetchUrl(`${searchType}?q=${searching}`)
-          : setFetchUrl(`${searchType}?q=a`);
-      }
-    } else {
-      // Top headlines search: country, category
-      {
-        searching
-          ? setFetchUrl(`${searchType}?q=${searching}`)
-          : setFetchUrl(`${searchType}?country=us`);
-      }
-    }
-  };
-
-  const onChangeFilter = (f) => {
+  const onChangeFilter = async (f) => {
     const filterValue = f.target.value;
     const filterId = f.target.id;
-    const prevFetchUrl = fetchUrl;
+    const prevSearching = searching;
 
-    return ["country", "category", "language", "sortBy"].includes(filterId)
-      ? setFetchUrl(
-          prevFetchUrl.replace(
-            `${filterId}=/[a-z]+/`,
-            `${filterId}=${filterValue}`
-          )
-        )
-      : setFetchUrl(`${prevFetchUrl}&${filterId}=${filterValue}`);
+    if (filterId === "everything" || filterId === "top-headlines") {
+      const newSearching = { ...prevSearching, type: filterId };
+
+      await setSearching(newSearching);
+      await console.log(newSearching);
+      return updateFetchUrl(newSearching);
+    } else {
+      const newSearching = { ...prevSearching, [filterId]: filterValue };
+
+      await setSearching(newSearching);
+      await console.log(newSearching);
+      return updateFetchUrl(newSearching);
+    }
   };
 
   const TopHeadline = () => {
     return (
       <fieldset onChange={onChangeFilter}>
         <legend>Top Headlines Filters</legend>
-
         <label htmlFor="country">Country</label>
         <select name="country" id="country">
           {CODES_COUNTRIES.map((country) => (
@@ -68,8 +60,8 @@ export default function Header() {
           ))}
         </select>
 
-        <label htmlFor="categ">Category</label>
-        <select name="categ" id="categ">
+        <label htmlFor="category">Category</label>
+        <select name="category" id="category">
           {CATEGORIES.map((category) => (
             <option key={category} value={category}>
               {category}
@@ -84,8 +76,8 @@ export default function Header() {
     return (
       <fieldset onChange={onChangeFilter}>
         <legend>All News</legend>
-        <label htmlFor="lang">Language</label>
-        <select name="lang" id="lang">
+        <label htmlFor="language">Language</label>
+        <select name="language" id="language">
           {CODES_LANGUAGES.map((lang) => (
             <option key={lang.code} value={lang.code}>
               {lang.lang}
@@ -107,28 +99,30 @@ export default function Header() {
   return (
     <>
       <form>
-        <input onChange={handleWritting} id="search-bar" />
+        <input id="q" onChange={onChangeFilter} />
         <button>Search</button>
       </form>
 
-      <form onChange={onChangeType}>
-        <input type="radio" name="type-of-news" value="top-headlines" />
+      <form onChange={onChangeFilter}>
+        <input
+          type="radio"
+          name="type-of-news"
+          id="top-headlines"
+          value="top-headlines"
+          defaultChecked
+        />
         Top headlines
-        <input type="radio" name="type-of-news" value="everything" />
+        <input
+          type="radio"
+          name="type-of-news"
+          id="everything"
+          value="everything"
+        />
         Everything
       </form>
-      {fetchUrl.includes("top-headlines") ? (
-        searching ? (
-          <TopHeadline />
-        ) : null
-      ) : searching ? (
-        <Everything />
-      ) : null}
-      <h2>
-        {searching
-          ? "The results are ..."
-          : "The current top headlines are ..."}
-      </h2>
+      {searching.type === "top-headlines" ? <TopHeadline /> : <Everything />}
+
+      <h2>The news are</h2>
     </>
   );
 }
