@@ -1,6 +1,5 @@
 import News from "./components/News";
 import Header from "./components/Header";
-import exampleNews from "./mocks/example-news.json";
 import { useEffect, useState, useContext } from "react";
 import { SearchContext } from "./context/SearchContext";
 import { API_KEY } from "./utils/constants.js";
@@ -21,7 +20,7 @@ function App() {
       return setStateNews(output.articles);
     }
     getMovies();
-  }, [fetchUrl]);
+  }, [fetchUrl, setFetchUrl, searching, setSearching]);
 
   return (
     <main>

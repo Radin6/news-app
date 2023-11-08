@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { SearchContext } from "../context/SearchContext";
 import {
   CODES_COUNTRIES,
@@ -44,16 +44,14 @@ export default function Header() {
     const filterId = f.target.id;
     const prevFetchUrl = fetchUrl;
 
-    {
-      ["country", "category", "language", "sortBy"].includes(filterId)
-        ? setFetchUrl(
-            prevFetchUrl.replace(
-              `${filterId}=/[a-z]+/`,
-              `${filterId}=${filterValue}`
-            )
+    return ["country", "category", "language", "sortBy"].includes(filterId)
+      ? setFetchUrl(
+          prevFetchUrl.replace(
+            `${filterId}=/[a-z]+/`,
+            `${filterId}=${filterValue}`
           )
-        : setFetchUrl(`${prevFetchUrl}&${filterId}=${filterValue}`);
-    }
+        )
+      : setFetchUrl(`${prevFetchUrl}&${filterId}=${filterValue}`);
   };
 
   const TopHeadline = () => {
