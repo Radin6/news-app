@@ -4,13 +4,13 @@ export default function News({ newsToFilter }) {
   return (
     <div className="news">
       {!newsToFilter ? (
-        <h2>Loading...</h2>
+        <h2>Please, write your search</h2>
       ) : (
         newsToFilter.map((arti) => (
           <li className="one-news" key={arti.url}>
             <h3>{arti.title}</h3>
-            {arti.urlToImage ? (
-              <img src={arti.urlToImage} alt={arti.title} />
+            {arti.image ? (
+              <img src={arti.image} alt={arti.title} />
             ) : (
               <img src="/breaking-news-generic.jpg" alt={arti.title} />
             )}

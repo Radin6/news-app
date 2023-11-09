@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { SearchContext } from "../context/SearchContext";
+import "./Header.css";
 
 import {
   CODES_COUNTRIES,
@@ -8,7 +9,7 @@ import {
   SORT_BY,
 } from "../utils/constants.js";
 
-export default function Header() {
+export default function Header({ totalArticles }) {
   const { searching, setSearching } = useContext(SearchContext);
   const { setFetchUrl } = useContext(SearchContext);
 
@@ -16,13 +17,11 @@ export default function Header() {
     console.log(newSearching);
     if (newSearching.type === "top-headlines") {
       return setFetchUrl(
-        `${newSearching.type}?q=${newSearching.q}&country=${
-          newSearching.country ? newSearching.country : ""
-        }&category=${newSearching.category ? newSearching.category : ""}`,
+        `${newSearching.type}?q=${newSearching.q}&country=${newSearching.country}&category=${newSearching.category}&lang=${newSearching.lang}`,
       );
-    } else if (newSearching.type === "everything") {
+    } else if (newSearching.type === "search") {
       return setFetchUrl(
-        `${newSearching.type}?q=${newSearching.q}&laguage=${newSearching.language}&sort=${newSearching.sort}`,
+        `${newSearching.type}?q=${newSearching.q}&lang=${newSearching.lang}&sortby=${newSearching.sortby}&country=${newSearching.country}`,
       );
     }
   };
@@ -32,7 +31,7 @@ export default function Header() {
     const filterId = f.target.id;
     const prevSearching = searching;
 
-    if (filterId === "everything" || filterId === "top-headlines") {
+    if (filterId === "search" || filterId === "top-headlines") {
       const newSearching = { ...prevSearching, type: filterId };
 
       await setSearching(newSearching);
@@ -47,82 +46,93 @@ export default function Header() {
     }
   };
 
-  const TopHeadline = () => {
+  const Filters = () => {
     return (
       <fieldset onChange={onChangeFilter}>
-        <legend>Top Headlines Filters</legend>
-        <label htmlFor="country">Country</label>
-        <select name="country" id="country">
-          {CODES_COUNTRIES.map((country) => (
-            <option key={country.code} value={country.code}>
-              {country.name}
-            </option>
-          ))}
-        </select>
+        <legend>Filters</legend>
 
-        <label htmlFor="category">Category</label>
-        <select name="category" id="category">
-          {CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </fieldset>
-    );
-  };
+        <label htmlFor="lang">
+          Language
+          <select name="lang" id="lang" defaultValue={searching.lang}>
+            {CODES_LANGUAGES.map((langu) => (
+              <option key={langu.code} value={langu.code}>
+                {langu.lang}
+              </option>
+            ))}
+          </select>
+        </label>
 
-  const Everything = () => {
-    return (
-      <fieldset onChange={onChangeFilter}>
-        <legend>All News</legend>
-        <label htmlFor="language">Language</label>
-        <select name="language" id="language">
-          {CODES_LANGUAGES.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.lang}
-            </option>
-          ))}
-        </select>
-        <label htmlFor="sort">Sort By</label>
-        <select name="sort" id="sort">
-          {SORT_BY.map((sort) => (
-            <option key={sort} value={sort}>
-              {sort}
-            </option>
-          ))}
-        </select>
+        <label htmlFor="country">
+          Country
+          <select name="country" id="country" defaultValue={searching.country}>
+            {CODES_COUNTRIES.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label htmlFor="sortby">
+          Sort By
+          <select name="sortby" id="sortby" defaultValue={searching.sortby}>
+            {SORT_BY.map((sortby) => (
+              <option key={sortby} value={sortby}>
+                {sortby}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label htmlFor="category">
+          Category
+          <select
+            name="category"
+            id="category"
+            defaultValue={searching.category}
+          >
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </label>
       </fieldset>
     );
   };
 
   return (
-    <>
-      <form>
-        <input id="q" onChange={onChangeFilter} />
-        <button>Search</button>
-      </form>
+    <div className="container-forms">
+      <fieldset>
+        <legend>Write your Search</legend>
+        <input
+          id="q"
+          onChange={onChangeFilter}
+          placeholder="Weather..."
+          name="Search"
+        />
+      </fieldset>
 
-      <form onChange={onChangeFilter}>
-        <input
-          type="radio"
-          name="type-of-news"
-          id="top-headlines"
-          value="top-headlines"
-          defaultChecked
-        />
-        Top headlines
-        <input
-          type="radio"
-          name="type-of-news"
-          id="everything"
-          value="everything"
-        />
-        Everything
-      </form>
-      {searching.type === "top-headlines" ? <TopHeadline /> : <Everything />}
+      <fieldset>
+        <legend>Type of Search</legend>
+        <form onChange={onChangeFilter}>
+          <input
+            type="radio"
+            name="type-of-news"
+            id="top-headlines"
+            value="top-headlines"
+            defaultChecked
+          />
+          Top headlines
+          <input type="radio" name="type-of-news" id="search" value="search" />
+          Search News
+        </form>
+      </fieldset>
+
+      <Filters />
 
       <h2>The news are</h2>
-    </>
+    </div>
   );
 }

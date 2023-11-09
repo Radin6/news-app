@@ -8,18 +8,18 @@ import "./App.css";
 
 function App() {
   const [stateNews, setStateNews] = useState();
-  const { fetchUrl, setFetchUrl } = useContext(SearchContext);
+  const { fetchUrl } = useContext(SearchContext);
 
   useEffect(() => {
-    async function getMovies() {
+    async function getNews() {
       const output = await fetch(
-        `https://newsapi.org/v2/${fetchUrl}&apiKey=${API_KEY}`,
+        `https://gnews.io/api/v4/${fetchUrl}&apikey=${API_KEY}`,
       ).then((res) => res.json());
       await console.log(fetchUrl);
       return setStateNews(output.articles);
     }
-    getMovies();
-  }, [fetchUrl, setFetchUrl]);
+    getNews();
+  }, [fetchUrl]);
 
   return (
     <main>

@@ -1,0 +1,13 @@
+fieldset {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.container-forms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

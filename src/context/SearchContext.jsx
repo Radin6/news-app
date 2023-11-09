@@ -4,14 +4,14 @@ import { useState } from "react";
 export const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
-  const [fetchUrl, setFetchUrl] = useState("top-headlines?country=us");
+  const [fetchUrl, setFetchUrl] = useState("top-headlines?");
   const [searching, setSearching] = useState({
     type: "top-headlines",
     q: "",
+    lang: "",
     country: "",
+    sortby: "",
     category: "",
-    language: "",
-    sort: "",
   });
 
   return (
