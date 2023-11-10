@@ -9,5 +9,5 @@ Currently, two official plugins are available:
 
 ---
 
-Search = [q, lang, country, from, to, sortby]
-Top-headline = [category, lang, country, from, to, q]
+Search = [q, lang, country, from, to, sortby]           diff : sortby
+Top-headline = [category, lang, country, from, to, q]   diff : category
